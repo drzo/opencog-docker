@@ -23,7 +23,7 @@ RUN apt-get -y install apt-transport-https software-properties-common \
 
 # Install ocpkg. Bump the date to get the latest ocpkg installed;
 # Otherwise, this docker build will be cached with an old octool.
-ENV LAST_OCPKG_UPDATE 2023-02-07
+ENV LAST_OCPKG_UPDATE 2024-04-07
 
 # The OCPKG_URL can be overridden by specifying
 # docker build --build-arg OCPKG_URL=https://some.where.else.com/ockpg
@@ -37,6 +37,8 @@ RUN chmod 755 /tmp/octool;  sync;
 # Run octool in multiple steps, instead of one big gulp.
 # This makes debugging install failures easier.
 RUN /tmp/octool -rdv
+
+# -l default is the latest Link Grammar release tarball.
 RUN /tmp/octool -v -l default
 
 # Environment Variables

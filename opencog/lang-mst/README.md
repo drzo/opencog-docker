@@ -60,6 +60,8 @@ Manual processing consists mostly of setting up an environment, and
 then launching the MST counting scripts, and then monitoring progress.
 Short instructions:
 
+0. If you haven't already done so, then: `docker start -i mst-counter`.
+
 1. Set up the environment. Just cut-n-paste the below:
 ```
 # Everything we need has already been set up in run-1.
@@ -79,7 +81,7 @@ source 3-mpg-conf.sh
 cd run
 rm -rf 2-word-pairs 4-gram-class
 
-# Run the MST counting pipeline in byobu.
+# Prepare to run the MST counting pipeline in byobu.
 cd 3-mst-parsing
 ```
 
@@ -129,9 +131,10 @@ cp -pr mpg-parse.rdb mpg-parse-copy.rdb
 ```
 
 2. Start the Link Grammar parser, using the demo dictionary provided.
-   This dictionary hard-codes the `mpg-parse-copy.rdb` file location
-   in it.
+   This dictionary is located in the `~/demo-dict-mpg` directory. It
+   hard-codes the `mpg-parse-copy.rdb` file location in it.
 ```
+cd ~
 link-parser demo-dict-mpg -verbosity=3
 ```
 
@@ -139,13 +142,41 @@ link-parser demo-dict-mpg -verbosity=3
    and there are appropriate disjuncts on them, then the sentence will
    parse.
 
-The parser will be slow to startup, asportions of the database are
+The parser will be slow to startup, as portions of the database are
 loaded, including expressions for the `LEFT-WALL`, of which there will
 typically be millions. This size of this set is reduced only by
-clustering, done in a later stage. One a lookup is done, the results
+clustering, done in a later stage. Once a lookup is done, the results
 are cached, so later access should be faster. The first-time lookup
 of words during parsing is likewise slow; subsequent access is cached.
 
+The dictionary is defined by the config files in `~/demo-dict-mpg`.
+You can copy and rename this directory as desired; you just have to
+start Link Grammar in the same directory where this is placed.
+Editing the `storage.dict` file to create a custom config. A typical
+change is to alter where the data is coming from. This is the line
+that starts with `#define storage-node`.
+
+Using a previously built container
+----------------------------------
+If you've followed the instructions above, and then stopped docker or
+rebooted, and want to restart that container, then here's how:
+
+1. Restart the docker container. Use the `-i` flag to get an
+   interactive shell:
+```
+docker start -i <container-name>
+```
+
+2. To run the Link Grammar demo, follow the instructions above.
+
+3. To restart processing after a hiatus, interpolate the earlier
+   instructions. Typically, this requires restarting the cogserver,
+   and then waiting for data to load. This can take tens of minutes
+   or hours.
+```
+cd ~/experiments/run-3/run/3-mst-parsing
+./run-mst-shells.sh
+```
 
 Semi-automated
 --------------
